@@ -36,7 +36,9 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
         val entity = result.get()
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, null)
+        val accountId = if (entity.accountid == null) null else UUID.fromString(entity.accountid)
+
+        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, accountId)
     }
 
     override fun update(proposal: ProposalDTO): ProposalDTO {
