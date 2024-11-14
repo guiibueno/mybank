@@ -21,11 +21,11 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
     override fun save(proposal: AccountRequest): ProposalDTO? {
         val proposalDetails: String = mapper.writeValueAsString(proposal);
-        val proposalEntity = ProposalEntity(null, AnalysisStatus.IN_ANALYSIS, LocalDateTime.now(), LocalDateTime.now(), null)
+        val proposalEntity = ProposalEntity(null, AnalysisStatus.IN_ANALYSIS, LocalDateTime.now(), LocalDateTime.now(), null, proposalDetails)
 
         val entity = proposalRepository.save(proposalEntity)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, null)
+        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, null, proposal)
     }
 
     override fun findById(id: UUID): ProposalDTO? {
@@ -38,14 +38,17 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
         val accountId = if (entity.accountid == null) null else UUID.fromString(entity.accountid)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, accountId)
+        val proposalDetails: AccountRequest = mapper.readValue(entity.additionalinfos, AccountRequest::class.java)
+
+        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, accountId, proposalDetails)
     }
 
     override fun update(proposal: ProposalDTO): ProposalDTO {
-        val proposalEntity = ProposalEntity(proposal.id.toString(), proposal.status, proposal.createdAt, LocalDateTime.now(), proposal.accountId.toString())
+        val proposalDetails: String = mapper.writeValueAsString(proposal.additionalinfos);
+        val proposalEntity = ProposalEntity(proposal.id.toString(), proposal.status, proposal.createdAt, LocalDateTime.now(), proposal.accountId.toString(), proposalDetails)
 
         val entity = proposalRepository.save(proposalEntity)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, UUID.fromString(entity.accountid))
+        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, UUID.fromString(entity.accountid), proposal.additionalinfos)
     }
 }
