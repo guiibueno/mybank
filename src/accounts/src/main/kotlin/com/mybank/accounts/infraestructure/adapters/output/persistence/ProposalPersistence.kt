@@ -42,6 +42,10 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
     }
 
     override fun update(proposal: ProposalDTO): ProposalDTO {
-        TODO("Not yet implemented")
+        val proposalEntity = ProposalEntity(proposal.id.toString(), proposal.status, proposal.createdAt, LocalDateTime.now(), proposal.accountId.toString())
+
+        val entity = proposalRepository.save(proposalEntity)
+
+        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, UUID.fromString(entity.accountid))
     }
 }
