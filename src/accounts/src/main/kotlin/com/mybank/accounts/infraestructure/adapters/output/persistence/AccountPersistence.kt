@@ -26,9 +26,20 @@ class AccountPersistence (
 
             val entity = accountRepository.save(accountEntity)
 
-            return AccountDTO(UUID.fromString(entity.id))
+            return AccountDTO(UUID.fromString(entity.id), entity.balance)
         }
 
         return null
+    }
+
+    override fun findById(id: UUID): AccountDTO? {
+        val result = accountRepository.findById(id.toString());
+
+        if(result.isEmpty)
+            return null
+
+        val entity = result.get()
+
+        return AccountDTO(UUID.fromString(entity.id), entity.balance)
     }
 }

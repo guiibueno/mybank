@@ -13,6 +13,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.spyk
 import org.junit.jupiter.api.Assertions
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.Test
@@ -41,7 +42,7 @@ class ProposalAnalysisUseCaseTest {
 
         val accountRequest = mockAccountRequest.GetAccountRequest()
         val proposalMock = ProposalDTO(proposalId, AnalysisStatus.IN_ANALYSIS, LocalDateTime.now(), LocalDateTime.now(), null,accountRequest)
-        val accountMock = AccountDTO(accountId)
+        val accountMock = AccountDTO(accountId, BigDecimal.ZERO)
 
         every { proposalOutputPort.findById(any<UUID>()) } returns proposalMock
         every { proposalOutputPort.update(any<ProposalDTO>()) } returns proposalMock.copy(status = "APPROVED", accountId = accountId)

@@ -11,6 +11,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.spyk
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.util.*
 
 class AccountRegisterUseCaseTest {
@@ -34,7 +35,7 @@ class AccountRegisterUseCaseTest {
 
         val accountRequest = mockAccountRequest.GetAccountRequest()
 
-        every { accountOutputPort.save(any<AccountRequest>()) } returns AccountDTO(accountId)
+        every { accountOutputPort.save(any<AccountRequest>()) } returns AccountDTO(accountId, BigDecimal.ZERO)
 
         val account = accountRegisterUseCase.invoke(accountRequest)
 
