@@ -22,7 +22,7 @@ class ProposalAnalysisUseCase (
             val account = accountRegisterPort.invoke(proposal.additionalinfos)
 
             if(account != null){
-                proposal = proposalOutputPort.update(proposal.copy(status = AnalysisStatus.APPROVED, accountId = UUID.randomUUID()))
+                proposal = proposalOutputPort.update(proposal.copy(status = AnalysisStatus.APPROVED, accountId = account.id))
 
                 return ProposalDTO(proposal.id, proposal.status, proposal.createdAt, proposal.updatedAt, proposal.accountId, proposal.additionalinfos)
             }
