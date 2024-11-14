@@ -24,6 +24,8 @@ services:
 
   kafka:
     image: 'wurstmeister/kafka:latest'
+    depends_on:
+      - zookeeper
     ports:
       - '9092:9092'
       - '59092:59092'
@@ -38,6 +40,8 @@ services:
       - 'KAFKA_CREATE_TOPICS=new-proposals:1:1'
 
   kafdrop:
+    depends_on:
+      - kafka
     image: 'obsidiandynamics/kafdrop:latest'
     ports:
       - '19000:9000'
