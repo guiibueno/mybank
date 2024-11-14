@@ -54,7 +54,6 @@ class SendProposalUseCaseTest {
     @Test
     fun `should return null when proposal save fails`() {
         val accountRequest = mockAccountRequest.GetAccountRequest()
-        val proposalMock = ProposalDTO(UUID.randomUUID(), AnalysisStatus.IN_ANALYSIS, LocalDateTime.now(), LocalDateTime.now(), null,accountRequest)
 
         every { proposalOutputPort.save(any<AccountRequest>()) } returns null
         every { proposalAnalysisOutputPort.sendToAnalysis(any<ProposalDTO>()) } returns Unit
