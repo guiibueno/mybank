@@ -5,25 +5,25 @@ import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.Prop
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.response.ProposalGetStatusResponse
 
 class  ProposalMapper {
-    fun convertToPortInput(dto: ProposalCreateRequest) : SendProposalRequest {
+    fun convertToPortInput(dto: ProposalCreateRequest) : AccountRequest {
 
-        val documents = ArrayList<DocumentDto>()
-        val contactInfos = ArrayList<ContactInfoDto>()
-        var address: AddressDto? = null
+        val documents = ArrayList<DocumentDTO>()
+        val contactInfos = ArrayList<ContactInfoDTO>()
+        var address: AddressDTO? = null
 
         dto.documents.forEach { it ->
-            documents.add(DocumentDto(it.type, it.number))
+            documents.add(DocumentDTO(it.type, it.number))
         }
 
         if(dto.address != null)
-            address = AddressDto(dto.address.street, dto.address.number, dto.address.city, dto.address.state)
+            address = AddressDTO(dto.address.street, dto.address.number, dto.address.city, dto.address.state)
 
         if(dto.contactInfos != null)
             dto.contactInfos.forEach { it ->
-                contactInfos.add(ContactInfoDto(it.type, it.number))
+                contactInfos.add(ContactInfoDTO(it.type, it.number))
             }
 
-        return SendProposalRequest(dto.name, dto.birthDate, documents, address, contactInfos)
+        return AccountRequest(dto.name, dto.birthDate, documents, address, contactInfos)
     }
 
     fun convertFromPortDTO(dto: ProposalDTO) : ProposalGetStatusResponse {

@@ -6,7 +6,7 @@ import org.springframework.util.Assert
 import java.time.LocalDate
 import kotlin.test.assertFailsWith
 
-class SendProposalRequestTest {
+class AccountRequestTest {
 
 
     @Test
@@ -16,7 +16,7 @@ class SendProposalRequestTest {
         val documents = ArrayList<DocumentDto>()
         documents.add(DocumentDto("CPF", "123.123.132-11"))
 
-        val request = SendProposalRequest(name, birthDate, documents, null, null)
+        val request = AccountRequest(name, birthDate, documents, null, null)
 
         Assert.notNull(request, "Valid request!")
         Assertions.assertEquals(name, request.name)
@@ -33,7 +33,7 @@ class SendProposalRequestTest {
 
         assertFailsWith<IllegalArgumentException>(
             block = {
-                val request = SendProposalRequest(name, birthDate, documents, null, null)
+                val request = AccountRequest(name, birthDate, documents, null, null)
             }
         )
     }
@@ -47,7 +47,7 @@ class SendProposalRequestTest {
 
         assertFailsWith<IllegalArgumentException>(
             block = {
-                val request = SendProposalRequest(name, birthDate, documents, null, null)
+                val request = AccountRequest(name, birthDate, documents, null, null)
             }
         )
     }
@@ -59,7 +59,7 @@ class SendProposalRequestTest {
         val documents = ArrayList<DocumentDto>()
         documents.add(DocumentDto("CPF", "123.123.132-11"))
 
-        val request = SendProposalRequest(name, birthDate, documents, null, null)
+        val request = AccountRequest(name, birthDate, documents, null, null)
 
         Assert.notNull(request, "Valid request!")
     }
@@ -75,7 +75,7 @@ class SendProposalRequestTest {
 
         assertFailsWith<IllegalArgumentException>(
             block = {
-                val request = SendProposalRequest(name, birthDate, documents, null, null)
+                val request = AccountRequest(name, birthDate, documents, null, null)
             }
         )
     }
@@ -90,7 +90,7 @@ class SendProposalRequestTest {
         documents.add(DocumentDto("Passaporte", "123.123.132-11"))
         documents.add(DocumentDto("Seilaoq", "123.123.132-11"))
 
-        val request = SendProposalRequest(name, birthDate, documents, null, null)
+        val request = AccountRequest(name, birthDate, documents, null, null)
 
         Assert.notNull(request, "Valid request!")
     }

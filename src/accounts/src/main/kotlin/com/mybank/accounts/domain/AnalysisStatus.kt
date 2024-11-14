@@ -1,4 +1,4 @@
-package com.mybank.accounts.domain.entity
+package com.mybank.accounts.domain
 
 object AnalysisStatus {
     const val IN_ANALYSIS = "IN_ANALYSIS"

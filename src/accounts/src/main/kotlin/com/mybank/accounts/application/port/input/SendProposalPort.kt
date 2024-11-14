@@ -1,7 +1,7 @@
 package com.mybank.accounts.application.port.input
 import com.mybank.accounts.application.dto.ProposalDTO
-import com.mybank.accounts.application.dto.SendProposalRequest
+import com.mybank.accounts.application.dto.AccountRequest
 
 interface SendProposalPort {
-    operator fun invoke(request: SendProposalRequest): ProposalDTO?
+    operator fun invoke(request: AccountRequest): ProposalDTO?
 }
