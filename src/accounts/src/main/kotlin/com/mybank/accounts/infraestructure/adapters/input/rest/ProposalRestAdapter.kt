@@ -6,6 +6,7 @@ import com.mybank.accounts.application.port.input.SendProposalPort
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.ProposalCreateRequest
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.response.ProposalCreateResponse
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.response.ProposalGetStatusResponse
+import com.mybank.accounts.infraestructure.adapters.input.rest.mapper.ProposalMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

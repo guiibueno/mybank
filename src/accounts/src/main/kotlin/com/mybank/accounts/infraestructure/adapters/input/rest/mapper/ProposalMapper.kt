@@ -1,4 +1,4 @@
-package com.mybank.accounts.infraestructure.adapters.input.rest
+package com.mybank.accounts.infraestructure.adapters.input.rest.mapper
 
 import com.mybank.accounts.application.dto.*
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.ProposalCreateRequest
