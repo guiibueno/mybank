@@ -1,23 +1,25 @@
 package com.mybank.accounts.infraestructure.adapters.output.persistence
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.ProposalOutputPort
 import com.mybank.accounts.domain.AnalysisStatus
 import com.mybank.accounts.domain.entity.ProposalEntity
+import com.mybank.accounts.infraestructure.adapters.output.cache.CacheAdapter
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.ProposalRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
 
 @Service
-class ProposalPersistence(val proposalRepository: ProposalRepository) : ProposalOutputPort {
-    val mapper = ObjectMapper()
+class ProposalPersistence(
+    val cache: CacheAdapter,
+    val mapper: ObjectMapper,
+    val proposalRepository: ProposalRepository) : ProposalOutputPort {
 
-    init{
-        mapper.findAndRegisterModules()
-    }
+    private fun getCacheKey(id: UUID): String = "Accounts.:${id.toString()}"
 
     override fun save(proposal: AccountRequest): ProposalDTO? {
         val proposalDetails: String = mapper.writeValueAsString(proposal);
@@ -25,7 +27,11 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
         val entity = proposalRepository.save(proposalEntity)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, null, proposal)
+        val dto = ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, null, proposal)
+        cache.setValue(getCacheKey(dto.id), dto, 30)
+
+        return dto
+
     }
 
     override fun findById(id: UUID): ProposalDTO? {
@@ -40,7 +46,10 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
         val proposalDetails: AccountRequest = mapper.readValue(entity.additionalinfos, AccountRequest::class.java)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, accountId, proposalDetails)
+        val dto = ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, accountId, proposalDetails)
+        cache.setValue(getCacheKey(dto.id), dto, 30)
+
+        return dto;
     }
 
     override fun update(proposal: ProposalDTO): ProposalDTO {
@@ -49,6 +58,11 @@ class ProposalPersistence(val proposalRepository: ProposalRepository) : Proposal
 
         val entity = proposalRepository.save(proposalEntity)
 
-        return ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, UUID.fromString(entity.accountid), proposal.additionalinfos)
+
+        val dto = ProposalDTO(UUID.fromString(entity.id), entity.status, entity.createdat, entity.updatedat, UUID.fromString(entity.accountid), proposal.additionalinfos)
+        cache.setValue(getCacheKey(dto.id), dto, 30)
+
+        return dto;
+
     }
 }

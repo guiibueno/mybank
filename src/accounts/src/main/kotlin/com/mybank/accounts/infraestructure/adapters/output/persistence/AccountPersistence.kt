@@ -4,6 +4,7 @@ import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.AccountOutputPort
 import com.mybank.accounts.domain.entity.AccountEntity
+import com.mybank.accounts.infraestructure.adapters.output.cache.CacheAdapter
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.AccountRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -13,9 +14,13 @@ import java.util.*
 
 @Service
 class AccountPersistence (
+    val cache: CacheAdapter,
     val customerPersistence: CustomerPersistence,
     val documentsPersistence: DocumentsPersistence,
-    val accountRepository: AccountRepository) : AccountOutputPort {
+    val accountRepository: AccountRepository) : AccountOutputPort
+{
+    private fun getCacheKey(id: UUID): String = "Accounts.:${id.toString()}"
+
     override fun save(accountRequest: AccountRequest): AccountDTO? {
         val customer = customerPersistence.save(accountRequest.name, accountRequest.birthDate)
 
@@ -25,21 +30,30 @@ class AccountPersistence (
             val accountEntity = AccountEntity(null, true, LocalDateTime.now(), customer.id, BigDecimal.ZERO)
 
             val entity = accountRepository.save(accountEntity)
+            val dto = AccountDTO(UUID.fromString(entity.id), entity.balance)
+            cache.setValue(getCacheKey(dto.id), dto, 30)
 
-            return AccountDTO(UUID.fromString(entity.id), entity.balance)
+            return dto
         }
 
         return null
     }
 
     override fun findById(id: UUID): AccountDTO? {
-        val result = accountRepository.findById(id.toString());
+        val cachedValue = cache.getValue(getCacheKey(id), AccountDTO::class.java)
+        if(cachedValue == null){
+            val result = accountRepository.findById(id.toString());
 
-        if(result.isEmpty)
-            return null
+            if(result.isEmpty)
+                return null
 
-        val entity = result.get()
+            val entity = result.get()
+            val dto = AccountDTO(UUID.fromString(entity.id), entity.balance)
+            cache.setValue(getCacheKey(dto.id), dto, 30)
 
-        return AccountDTO(UUID.fromString(entity.id), entity.balance)
+            return dto;
+        }
+
+        return cachedValue
     }
 }
