@@ -1,7 +1,5 @@
 package com.mybank.accounts.infraestructure.adapters.input.listener
 
-import com.mybank.accounts.application.dto.AccountRequest
-import com.mybank.accounts.application.port.input.AccountRegisterPort
 import com.mybank.accounts.application.port.input.ProposalAnalysisPort
 import com.mybank.accounts.domain.event.ProposalEvent
 import org.apache.kafka.clients.consumer.ConsumerRecord

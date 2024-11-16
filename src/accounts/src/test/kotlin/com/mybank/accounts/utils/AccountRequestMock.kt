@@ -1,4 +1,4 @@
-package com.mybank.accounts.application.utils
+package com.mybank.accounts.utils
 
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.dto.AddressDTO

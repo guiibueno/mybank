@@ -5,7 +5,7 @@ import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.port.input.AccountRegisterPort
 import com.mybank.accounts.application.port.output.ProposalOutputPort
-import com.mybank.accounts.application.utils.AccountRequestMock
+import com.mybank.accounts.utils.AccountRequestMock
 import com.mybank.accounts.domain.AnalysisStatus
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify

@@ -2,7 +2,7 @@ package com.mybank.accounts.application.usecase
 
 import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.port.output.ProposalOutputPort
-import com.mybank.accounts.application.utils.AccountRequestMock
+import com.mybank.accounts.utils.AccountRequestMock
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.Assertions

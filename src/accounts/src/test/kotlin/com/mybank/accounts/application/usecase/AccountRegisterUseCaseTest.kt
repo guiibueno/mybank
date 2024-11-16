@@ -3,7 +3,7 @@ package com.mybank.accounts.application.usecase
 import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.AccountOutputPort
-import com.mybank.accounts.application.utils.AccountRequestMock
+import com.mybank.accounts.utils.AccountRequestMock
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.every
