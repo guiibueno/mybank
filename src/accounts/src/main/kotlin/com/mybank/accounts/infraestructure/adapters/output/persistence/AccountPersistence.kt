@@ -2,8 +2,11 @@ package com.mybank.accounts.infraestructure.adapters.output.persistence
 
 import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
+import com.mybank.accounts.application.dto.TransactionRequestDTO
+import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.output.AccountOutputPort
 import com.mybank.accounts.domain.entity.AccountEntity
+import com.mybank.accounts.domain.valueobjects.TransactionStatus
 import com.mybank.accounts.infraestructure.adapters.output.cache.CacheAdapter
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.AccountRepository
 import org.springframework.stereotype.Service
@@ -55,5 +58,15 @@ class AccountPersistence (
         }
 
         return cachedValue
+    }
+
+    override fun updateBalance(id: UUID, transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO {
+        val result = accountRepository.updateBalance(id.toString(), transactionRequestDTO.type, transactionRequestDTO.amount)
+        var transactionStatus: String = TransactionStatus.REJECTED
+
+        if(result.success)
+            transactionStatus = TransactionStatus.APPROVED
+
+        return TransactionResultDTO(LocalDateTime.now(), transactionStatus, transactionRequestDTO.type, transactionRequestDTO.amount, result.balance)
     }
 }

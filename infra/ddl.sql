@@ -31,3 +31,60 @@ CREATE TABLE accounts (
 	"createdat" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"balance" DECIMAL(12,2)
 );
+
+CREATE OR REPLACE FUNCTION update_balance(
+	accountid VARCHAR(36),
+	transactiontype CHAR(1),
+	transactionvalue DECIMAL(12,2)
+) RETURNS TABLE (
+	"success" BOOL,
+	"balance" DECIMAL(12,2)
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	currentbalance DECIMAL(12,2);
+	transactionsuccess BOOL;
+BEGIN
+	transactionsuccess = FALSE::bool;
+
+	SELECT 
+		a.balance
+	INTO 
+		currentbalance
+	FROM 
+		accounts a
+	WHERE 
+		a.id = accountid
+	FOR UPDATE;
+	
+	IF transactiontype = 'C' THEN
+		UPDATE 
+			accounts
+		SET 
+			balance = currentbalance + transactionvalue
+		WHERE 
+			id = accountid;
+		
+		transactionsuccess = TRUE::bool;
+	ELSEIF currentbalance - transactionvalue >= 0 THEN
+		UPDATE 
+			accounts
+		SET 
+			balance = currentbalance - transactionvalue
+		WHERE 
+			id = accountid;
+			
+		transactionsuccess = TRUE::bool;
+	END IF;
+
+	RETURN QUERY 
+		SELECT 
+			transactionsuccess::bool,
+			a.balance
+		FROM 
+			accounts a
+		WHERE 
+			a.id = accountid;
+END;
+$$;
