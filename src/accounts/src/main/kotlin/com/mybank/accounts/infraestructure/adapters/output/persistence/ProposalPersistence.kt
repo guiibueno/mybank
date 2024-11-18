@@ -1,13 +1,12 @@
 package com.mybank.accounts.infraestructure.adapters.output.persistence
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.ProposalOutputPort
 import com.mybank.accounts.domain.AnalysisStatus
 import com.mybank.accounts.domain.entity.ProposalEntity
-import com.mybank.accounts.infraestructure.adapters.output.cache.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheAdapter
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.ProposalRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
