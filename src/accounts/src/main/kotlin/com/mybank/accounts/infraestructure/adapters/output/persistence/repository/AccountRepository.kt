@@ -12,5 +12,5 @@ interface AccountRepository : CrudRepository<AccountEntity, String> {
     @Query(value = "select * from update_balance(:accountid, :transactiontype, :transactionvalue);")
     fun updateBalance(@Param("accountid") accountId: String,
                       @Param("transactiontype")transactionType: Char,
-                      @Param("transactionvalue")transactionValue: BigDecimal): UpdateBalanceEntity
+                      @Param("transactionvalue")transactionValue: BigDecimal): UpdateBalanceEntity?
 }

@@ -24,8 +24,8 @@ class TransactionAuthorizerUseCase(
         if(accountLock.tryLock(30, 15, TimeUnit.SECONDS)){
             try{
                 val result = accountOutputPort.updateBalance(transactionRequestDTO.accountId, transactionRequestDTO)
-                val event = TransactionEvent(id, result.timestamp, result.status, result.type, result.amount)
-                transactionOutputPort.emitEvent(event)
+                if(result != null)
+                    sendEvent(id, result)
 
                 return result;
             }
@@ -35,5 +35,10 @@ class TransactionAuthorizerUseCase(
         }
 
         return null
+    }
+
+    private fun sendEvent(id: UUID, result: TransactionResultDTO){
+        val event = TransactionEvent(id, result.timestamp, result.status, result.type, result.amount)
+        transactionOutputPort.emitEvent(event)
     }
 }
