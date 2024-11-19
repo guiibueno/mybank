@@ -1,6 +1,7 @@
 package com.mybank.accounts.infraestructure.adapters.input.rest
 
 import com.mybank.accounts.application.dto.AccountDTO
+import com.mybank.accounts.application.port.input.AccountRegisterPort
 import com.mybank.accounts.application.port.input.GetAccountPort
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
@@ -17,12 +18,14 @@ class AccountsRestAdapterTest {
     private var accountsRestAdapter: AccountsRestAdapter
 
     @MockK
+    private lateinit var accountRegisterPort: AccountRegisterPort
+    @MockK
     private lateinit var getAccountPort: GetAccountPort
 
     init {
         MockKAnnotations.init(this)
         accountsRestAdapter = spyk(
-            AccountsRestAdapter(getAccountPort)
+            AccountsRestAdapter(accountRegisterPort, getAccountPort)
         )
     }
 
@@ -42,7 +45,7 @@ class AccountsRestAdapterTest {
         Assertions.assertEquals(accountMock.balance, response.body?.balance)
 
         coVerify (exactly = 1) {
-            getAccountPort.invoke(any())
+            getAccountPort.invoke(any<UUID>())
         }
     }
 
@@ -59,7 +62,7 @@ class AccountsRestAdapterTest {
         Assertions.assertEquals(HttpStatus.NOT_FOUND,response.statusCode)
 
         coVerify (exactly = 1) {
-            getAccountPort.invoke(any())
+            getAccountPort.invoke(any<UUID>())
         }
     }
 }

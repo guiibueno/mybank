@@ -1,7 +1,6 @@
 package com.mybank.accounts.infraestructure.adapters.output.metrics
 
 import com.mybank.accounts.application.dto.AccountDTO
-import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.output.MetricsOutputPort
 import io.micrometer.core.instrument.Counter
@@ -16,14 +15,6 @@ class MicrometerMetricsOutputPort(
     override fun proposalCreated() {
         val tags = ArrayList<Pair<String, String>>()
         register("proposal.created", tags.toList())
-    }
-
-    override fun proposalHandled(proposal: ProposalDTO) {
-        val tags = arrayOf(
-            "proposal_status" to proposal.status
-        )
-
-        register("proposal.handled", tags.toList())
     }
 
     override fun transactionHandled(transaction: TransactionResultDTO) {

@@ -11,4 +11,8 @@ class GetAccountUseCase(val accountOutputPort: AccountOutputPort) : GetAccountPo
     override fun invoke(accountId: UUID): AccountDTO? {
         return accountOutputPort.findById(accountId)
     }
+
+    override fun invoke(documentNumber: String): AccountDTO? {
+        TODO("Not yet implemented")
+    }
 }

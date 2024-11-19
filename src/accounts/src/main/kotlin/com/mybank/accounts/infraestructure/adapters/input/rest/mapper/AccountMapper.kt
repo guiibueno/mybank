@@ -1,11 +1,15 @@
 package com.mybank.accounts.infraestructure.adapters.input.rest.mapper
 
-import com.mybank.accounts.application.dto.*
-import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.ProposalCreateRequest
-import com.mybank.accounts.infraestructure.adapters.input.rest.data.response.ProposalGetStatusResponse
+import com.mybank.accounts.application.dto.AccountRequest
+import com.mybank.accounts.application.dto.AddressDTO
+import com.mybank.accounts.application.dto.ContactInfoDTO
+import com.mybank.accounts.application.dto.DocumentDTO
+import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.AccountCreateRequest
+import java.util.*
+import kotlin.collections.ArrayList
 
-class  ProposalMapper {
-    fun convertToPortInput(dto: ProposalCreateRequest) : AccountRequest {
+class AccountMapper {
+    fun convertToPortInput(dto: AccountCreateRequest) : AccountRequest {
 
         val documents = ArrayList<DocumentDTO>()
         val contactInfos = ArrayList<ContactInfoDTO>()
@@ -24,9 +28,5 @@ class  ProposalMapper {
             }
 
         return AccountRequest(dto.name, dto.birthDate, documents, address, contactInfos)
-    }
-
-    fun convertFromPortDTO(dto: ProposalDTO) : ProposalGetStatusResponse {
-        return ProposalGetStatusResponse(dto.id, dto.status, dto.createdAt, dto.updatedAt, dto.accountId)
     }
 }

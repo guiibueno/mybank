@@ -4,7 +4,6 @@ import com.mybank.accounts.application.dto.TransactionRequestDTO
 import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.input.TransactionAuthorizerPort
 import com.mybank.accounts.infraestructure.adapters.input.rest.data.request.TransactionRequest
-import com.mybank.accounts.infraestructure.adapters.input.rest.mapper.ProposalMapper
 import com.mybank.accounts.infraestructure.adapters.input.rest.mapper.TransactionMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

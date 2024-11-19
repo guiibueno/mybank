@@ -2,6 +2,7 @@ package com.mybank.accounts.application.dto
 
 import java.time.LocalDate
 import java.time.Period
+import java.util.*
 
 data class AccountRequest(val name: String,
                           val birthDate: LocalDate,

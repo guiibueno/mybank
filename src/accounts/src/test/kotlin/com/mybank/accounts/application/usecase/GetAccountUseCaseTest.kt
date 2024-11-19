@@ -2,9 +2,7 @@ package com.mybank.accounts.application.usecase
 
 import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
-import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.port.output.AccountOutputPort
-import com.mybank.accounts.domain.AnalysisStatus
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.every
