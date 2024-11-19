@@ -6,7 +6,7 @@ import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.ProposalOutputPort
 import com.mybank.accounts.domain.AnalysisStatus
 import com.mybank.accounts.domain.entity.ProposalEntity
-import com.mybank.accounts.application.port.output.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheOutputPort
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.ProposalRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -14,7 +14,7 @@ import java.util.*
 
 @Service
 class ProposalPersistence(
-    val cache: CacheAdapter,
+    val cache: CacheOutputPort,
     val mapper: ObjectMapper,
     val proposalRepository: ProposalRepository) : ProposalOutputPort {
 

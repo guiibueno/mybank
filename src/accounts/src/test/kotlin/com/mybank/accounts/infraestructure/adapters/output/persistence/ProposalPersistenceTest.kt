@@ -1,11 +1,9 @@
 package com.mybank.accounts.infraestructure.adapters.output.persistence
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.dto.ProposalDTO
-import com.mybank.accounts.application.port.output.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheOutputPort
 import com.mybank.accounts.domain.AnalysisStatus
-import com.mybank.accounts.domain.entity.CustomerEntity
 import com.mybank.accounts.domain.entity.ProposalEntity
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.ProposalRepository
 import com.mybank.accounts.utils.AccountRequestMock
@@ -16,8 +14,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.spyk
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.annotation.JsonAppend.Prop
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -29,7 +25,7 @@ class ProposalPersistenceTest {
     private var mapper: ObjectMapper
 
     @MockK
-    private lateinit var cache: CacheAdapter
+    private lateinit var cache: CacheOutputPort
     @MockK
     private lateinit var proposalRepository: ProposalRepository
 

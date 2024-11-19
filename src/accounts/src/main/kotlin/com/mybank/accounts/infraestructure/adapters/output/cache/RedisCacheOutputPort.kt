@@ -1,7 +1,7 @@
 package com.mybank.accounts.infraestructure.adapters.output.cache
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mybank.accounts.application.port.output.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheOutputPort
 import org.redisson.api.RedissonClient
 import org.redisson.client.codec.StringCodec
 import org.slf4j.LoggerFactory
@@ -10,10 +10,10 @@ import java.time.Duration
 import java.time.Instant
 
 @Service
-class RedisCacheAdapter(
+class RedisCacheOutputPort(
     val mapper: ObjectMapper,
     val client: RedissonClient
-) : CacheAdapter {
+) : CacheOutputPort {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun setValue(key: String, value: Any, ttl: Long) {

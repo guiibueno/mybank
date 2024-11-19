@@ -1,9 +1,8 @@
 package com.mybank.accounts.infraestructure.adapters.output.persistence
 
 import com.mybank.accounts.application.dto.AccountDTO
-import com.mybank.accounts.application.dto.ProposalDTO
 import com.mybank.accounts.application.dto.TransactionRequestDTO
-import com.mybank.accounts.application.port.output.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheOutputPort
 import com.mybank.accounts.domain.entity.AccountEntity
 import com.mybank.accounts.domain.entity.CustomerEntity
 import com.mybank.accounts.domain.entity.UpdateBalanceEntity
@@ -25,7 +24,7 @@ class AccountPersistenceTest {
 
     private var accountPersistence: AccountPersistence
     @MockK
-    private lateinit var cache: CacheAdapter
+    private lateinit var cache: CacheOutputPort
 
     @MockK
     private lateinit var customerPersistence: CustomerPersistence

@@ -7,7 +7,7 @@ import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.output.AccountOutputPort
 import com.mybank.accounts.domain.entity.AccountEntity
 import com.mybank.accounts.domain.valueobjects.TransactionStatus
-import com.mybank.accounts.application.port.output.CacheAdapter
+import com.mybank.accounts.application.port.output.CacheOutputPort
 import com.mybank.accounts.infraestructure.adapters.output.persistence.repository.AccountRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -17,7 +17,7 @@ import java.util.*
 
 @Service
 class AccountPersistence (
-    val cache: CacheAdapter,
+    val cache: CacheOutputPort,
     val customerPersistence: CustomerPersistence,
     val documentsPersistence: DocumentsPersistence,
     val accountRepository: AccountRepository) : AccountOutputPort
