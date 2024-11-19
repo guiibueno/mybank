@@ -21,16 +21,11 @@ class TransactionRestAdapter(
     fun handleTransaction(@PathVariable accountId: UUID,
                           @RequestBody request: TransactionRequest
     ) : ResponseEntity<TransactionResultDTO> {
-        try{
-            val dto = mapper.convertToPortInput(accountId, request)
-            val result: TransactionResultDTO? = transactionAuthorizerPort.invoke(dto)
+        val dto = mapper.convertToPortInput(accountId, request)
+        val result: TransactionResultDTO? = transactionAuthorizerPort.invoke(dto)
 
-            if(result != null)
-                return ResponseEntity(result, HttpStatus.OK)
-        }
-        catch (validationException: IllegalArgumentException) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST);
-        }
+        if(result != null)
+            return ResponseEntity(result, HttpStatus.OK)
 
         return ResponseEntity(null, HttpStatus.UNPROCESSABLE_ENTITY);
     }
