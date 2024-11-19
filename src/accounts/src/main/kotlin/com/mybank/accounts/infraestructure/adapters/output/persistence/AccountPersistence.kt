@@ -60,12 +60,12 @@ class AccountPersistence (
         return cachedValue
     }
 
-    override fun updateBalance(id: UUID, transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO? {
-        val result = accountRepository.updateBalance(id.toString(), transactionRequestDTO.type, transactionRequestDTO.amount)
+    override fun updateBalance(transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO? {
+        val result = accountRepository.updateBalance(transactionRequestDTO.accountId.toString(), transactionRequestDTO.type, transactionRequestDTO.amount)
 
         if(result != null) {
            val transactionStatus: String = if(result.success) TransactionStatus.APPROVED else TransactionStatus.REJECTED
-            cache.expire(getCacheKey(id))
+            cache.expire(getCacheKey(transactionRequestDTO.accountId))
 
             return TransactionResultDTO(LocalDateTime.now(), transactionStatus, transactionRequestDTO.type, transactionRequestDTO.amount, result.balance)
         }

@@ -23,7 +23,7 @@ class TransactionAuthorizerUseCase(
 
         if(accountLock.tryLock(30, 15, TimeUnit.SECONDS)){
             try{
-                val result = accountOutputPort.updateBalance(transactionRequestDTO.accountId, transactionRequestDTO)
+                val result = accountOutputPort.updateBalance(transactionRequestDTO)
                 if(result != null)
                     sendEvent(id, result)
 

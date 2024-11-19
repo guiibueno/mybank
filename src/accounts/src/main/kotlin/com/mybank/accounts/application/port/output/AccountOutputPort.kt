@@ -9,5 +9,5 @@ import java.util.*
 interface AccountOutputPort {
     fun save(accountRequest: AccountRequest): AccountDTO?
     fun findById(id: UUID): AccountDTO?
-    fun updateBalance(id: UUID, transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO?
+    fun updateBalance(transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO?
 }

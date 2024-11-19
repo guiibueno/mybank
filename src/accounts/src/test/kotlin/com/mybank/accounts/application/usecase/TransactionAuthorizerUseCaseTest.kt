@@ -51,7 +51,7 @@ class TransactionAuthorizerUseCaseTest {
         every { accountLock.tryLock(any(), any(), any()) } returns true
         every { accountLock.unlock() } returns Unit
 
-        every { accountOutputPort.updateBalance(accountId, any<TransactionRequestDTO>()) } returns TransactionResultDTO(
+        every { accountOutputPort.updateBalance(any<TransactionRequestDTO>()) } returns TransactionResultDTO(
             LocalDateTime.now(), TransactionStatus.APPROVED, transactionRequest.type, transactionRequest.amount, BigDecimal.TEN)
 
         every { transactionOutputPort.emitEvent(any()) } returns Unit
@@ -67,7 +67,7 @@ class TransactionAuthorizerUseCaseTest {
             accountLock.tryLock(any(), any(), any())
             accountLock.unlock()
 
-            accountOutputPort.updateBalance(accountId, any())
+            accountOutputPort.updateBalance(any())
             transactionOutputPort.emitEvent(any())
         }
     }
@@ -82,7 +82,7 @@ class TransactionAuthorizerUseCaseTest {
         every { accountLock.tryLock(any(), any(), any()) } returns false
         every { accountLock.unlock() } returns Unit
 
-        every { accountOutputPort.updateBalance(accountId, any<TransactionRequestDTO>()) } returns TransactionResultDTO(
+        every { accountOutputPort.updateBalance(any<TransactionRequestDTO>()) } returns TransactionResultDTO(
             LocalDateTime.now(), TransactionStatus.REJECTED, transactionRequest.type, transactionRequest.amount, BigDecimal.TEN)
 
         every { transactionOutputPort.emitEvent(any()) } returns Unit
@@ -99,10 +99,10 @@ class TransactionAuthorizerUseCaseTest {
         coVerify (exactly = 0) {
             accountLock.unlock()
 
-            accountOutputPort.updateBalance(accountId, any())
+            accountOutputPort.updateBalance(any())
             transactionOutputPort.emitEvent(any())
 
-            accountOutputPort.updateBalance(accountId, any())
+            accountOutputPort.updateBalance(any())
         }
     }
 }
