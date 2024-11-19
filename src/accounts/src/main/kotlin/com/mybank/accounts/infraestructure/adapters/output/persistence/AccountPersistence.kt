@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Service
@@ -71,5 +72,11 @@ class AccountPersistence (
         }
 
         return null
+    }
+
+    override fun findByDocument(documentType: String, documentNumber: String): List<AccountDTO> {
+        val accounts = accountRepository.findByDocument(documentType, documentNumber)
+
+        return accounts.map { AccountDTO(UUID.fromString(it.id), it.balance) }
     }
 }

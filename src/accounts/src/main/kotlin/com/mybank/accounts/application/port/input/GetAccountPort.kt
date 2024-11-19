@@ -5,5 +5,5 @@ import java.util.*
 
 interface GetAccountPort {
     operator fun invoke(accountId: UUID): AccountDTO?
-    operator fun invoke(documentNumber: String): AccountDTO?
+    operator fun invoke(documentType: String, documentNumber: String): List<AccountDTO>
 }

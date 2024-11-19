@@ -27,12 +27,12 @@ class AccountsRestAdapter(
     }
 
     @GetMapping("")
-    fun findByDocument(@RequestParam documentNumber: String): ResponseEntity<AccountDTO?> {
-        val result: AccountDTO? = getAccountPort.invoke(documentNumber)
-        if(result != null)
+    fun findByDocument(@RequestParam documentType: String, @RequestParam documentNumber: String): ResponseEntity<List<AccountDTO>> {
+        val result: List<AccountDTO> = getAccountPort.invoke(documentType, documentNumber)
+        if(result.isNotEmpty())
             return ResponseEntity(result, HttpStatus.OK)
 
-        return ResponseEntity(null, HttpStatus.NOT_FOUND);
+        return ResponseEntity(null, HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")

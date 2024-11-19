@@ -10,4 +10,5 @@ interface AccountOutputPort {
     fun save(accountRequest: AccountRequest): AccountDTO?
     fun findById(id: UUID): AccountDTO?
     fun updateBalance(transactionRequestDTO: TransactionRequestDTO): TransactionResultDTO?
+    fun findByDocument(documentType: String, documentNumber: String): List<AccountDTO>
 }

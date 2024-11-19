@@ -13,4 +13,13 @@ interface AccountRepository : CrudRepository<AccountEntity, String> {
     fun updateBalance(@Param("accountid") accountId: String,
                       @Param("transactiontype")transactionType: Char,
                       @Param("transactionvalue")transactionValue: BigDecimal): UpdateBalanceEntity?
+
+    @Query(value = "select \n" +
+                    "\ta.id, a.customerid, a.active, a.createdat, a.balance \n" +
+                    "from \n" +
+                    "\taccounts a \n" +
+                    "inner join customerdocuments c on c.customerid = a.customerid \n" +
+                    "where c.type=:type and c.\"number\" =:number;")
+    fun findByDocument(@Param("type") documentType: String,
+                       @Param("number")number: String): Iterable<AccountEntity>
 }
