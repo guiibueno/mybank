@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class AccountRegisterUseCase(val accountOutputPort: AccountOutputPort,
                              val accountRegisterOutputPort: AccountRegisterOutputPort,
+                             val accountCreatedOutputPort: AccountCreatedOutputPort,
                              val metricsOutputPort: MetricsOutputPort
 ) : AccountRegisterPort {
     override fun invoke(accountRequest: AccountRequest): AccountDTO? {
@@ -20,11 +21,13 @@ class AccountRegisterUseCase(val accountOutputPort: AccountOutputPort,
 
         if(account != null){
             metricsOutputPort.accountCreated(account)
+            accountCreatedOutputPort.emitEvent(AccountCreatedEvent(account.id))
         }
 
         return account;
     }
     override fun invokeAsync(accountRequest: AccountRequest) {
         accountRegisterOutputPort.sendToAsyncProcess(accountRequest)
+        metricsOutputPort.accountRegisterRequested()
     }
 }

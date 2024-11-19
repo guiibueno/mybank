@@ -2,7 +2,6 @@ package com.mybank.accounts.infraestructure.adapters.input.listener
 
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.input.AccountRegisterPort
-import com.mybank.accounts.infraestructure.adapters.input.listener.data.AccountRegisterEventDto
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener

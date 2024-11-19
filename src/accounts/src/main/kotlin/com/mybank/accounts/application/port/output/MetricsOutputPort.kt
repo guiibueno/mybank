@@ -4,7 +4,7 @@ import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.TransactionResultDTO
 
 interface MetricsOutputPort {
-    fun proposalCreated()
     fun transactionHandled(transaction: TransactionResultDTO)
+    fun accountRegisterRequested()
     fun accountCreated(account: AccountDTO)
 }

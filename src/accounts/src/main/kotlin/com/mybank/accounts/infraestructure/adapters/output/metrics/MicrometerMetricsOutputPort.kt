@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service
 class MicrometerMetricsOutputPort(
     private val meterRegistry: MeterRegistry
 ) : MetricsOutputPort {
-    override fun proposalCreated() {
+
+    override fun accountRegisterRequested() {
         val tags = ArrayList<Pair<String, String>>()
-        register("proposal.created", tags.toList())
+        register("account.requested", tags.toList())
     }
 
     override fun transactionHandled(transaction: TransactionResultDTO) {
