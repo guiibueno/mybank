@@ -5,6 +5,7 @@ import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.dto.TransactionRequestDTO
 import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.output.AccountOutputPort
+import com.mybank.accounts.application.port.output.MetricsOutputPort
 import com.mybank.accounts.application.port.output.TransactionOutputPort
 import com.mybank.accounts.domain.valueobjects.TransactionStatus
 import com.mybank.accounts.utils.AccountRequestMock
@@ -30,6 +31,8 @@ class TransactionAuthorizerUseCaseTest {
     private lateinit var accountOutputPort: AccountOutputPort
     @MockK
     private lateinit var transactionOutputPort: TransactionOutputPort
+    @MockK
+    private lateinit var metricsOutputPort: MetricsOutputPort
 
     @MockK
     private lateinit var accountLock: RLock
@@ -37,8 +40,10 @@ class TransactionAuthorizerUseCaseTest {
     init {
         MockKAnnotations.init(this)
         transactionAuthorizerUseCase = spyk(
-            TransactionAuthorizerUseCase(redissonClient, accountOutputPort, transactionOutputPort)
+            TransactionAuthorizerUseCase(redissonClient, accountOutputPort, transactionOutputPort, metricsOutputPort)
         )
+
+        every { metricsOutputPort.transactionHandled(any()) } returns Unit
     }
 
     @Test

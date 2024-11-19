@@ -3,6 +3,7 @@ package com.mybank.accounts.application.usecase
 import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.output.AccountOutputPort
+import com.mybank.accounts.application.port.output.MetricsOutputPort
 import com.mybank.accounts.utils.AccountRequestMock
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
@@ -21,12 +22,16 @@ class AccountRegisterUseCaseTest {
 
     @MockK
     private lateinit var accountOutputPort: AccountOutputPort
+    @MockK
+    private lateinit var metricsOutputPort: MetricsOutputPort
 
     init {
         MockKAnnotations.init(this)
         accountRegisterUseCase = spyk(
-            AccountRegisterUseCase(accountOutputPort)
+            AccountRegisterUseCase(accountOutputPort, metricsOutputPort)
         )
+
+        every { metricsOutputPort.accountCreated(any()) } returns Unit
     }
 
     @Test

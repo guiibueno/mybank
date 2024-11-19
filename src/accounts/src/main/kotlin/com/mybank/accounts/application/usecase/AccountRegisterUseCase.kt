@@ -4,11 +4,19 @@ import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.port.input.AccountRegisterPort
 import com.mybank.accounts.application.port.output.AccountOutputPort
+import com.mybank.accounts.application.port.output.MetricsOutputPort
 import org.springframework.stereotype.Service
 
 @Service
-class AccountRegisterUseCase(val accountOutputPort: AccountOutputPort) : AccountRegisterPort {
+class AccountRegisterUseCase(val accountOutputPort: AccountOutputPort,
+                             val metricsOutputPort: MetricsOutputPort
+) : AccountRegisterPort {
     override fun invoke(accountRequest: AccountRequest): AccountDTO? {
-        return accountOutputPort.save(accountRequest);
+        var account = accountOutputPort.save(accountRequest);
+
+        if(account != null)
+            metricsOutputPort.accountCreated(account)
+
+        return account;
     }
 }
