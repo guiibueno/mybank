@@ -34,6 +34,10 @@ class ProposalPersistence(
     }
 
     override fun findById(id: UUID): ProposalDTO? {
+        val cachedValue = cache.getValue(getCacheKey(id), ProposalDTO::class.java)
+        if(cachedValue != null)
+            return cachedValue
+
         val result = proposalRepository.findById(id.toString());
 
         if(result.isEmpty)
@@ -62,6 +66,5 @@ class ProposalPersistence(
         cache.setValue(getCacheKey(dto.id), dto, 30)
 
         return dto;
-
     }
 }
