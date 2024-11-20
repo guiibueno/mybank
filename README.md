@@ -177,6 +177,9 @@ Caso uma transação não possa ser efetivada, deve ser RECUSADA.
 * Toda transação processada(`transaction.handled`) geram métricas.
 * Toda transação processada gera um evento num tópico kafka (`transactions`)
 
+**Fluxo de autorização de transações:**
+![Diagrama de Sequencia do Fluxo de Autorização de Transações](docs/transaction-authorizer-sequence-diagram.svg)
+
 # Executar a aplicação localmente
 Execute os seguintes comandos no terminal:
 
