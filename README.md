@@ -199,9 +199,19 @@ cd ..\..\infra
 docker compose up
 ```
 
-A aplicação terá iniciado na porta 8080 e você pode validar acessando o healthcheck pelo browser:
+A aplicação terá iniciado na porta `8080` e você pode validar acessando o healthcheck pelo browser:
 
 `http://localhost:8080/actuator/health`
+
+
+Para visualizar as metricas, acesse o grafana na porta `3000`:
+
+`http://localhost:3000/`
+
+Usuário: admin
+Senha: grafana
+
+![Dashboard grafana](docs/dashboard-sample.png)
 
 # Desenho de Arquitetura para AWS
 ![Diagrama de Arquitetura](docs/Diagrama-aws-v1.drawio.svg)
