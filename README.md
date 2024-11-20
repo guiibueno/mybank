@@ -177,5 +177,24 @@ Caso uma transação não possa ser efetivada, deve ser RECUSADA.
 * Toda transação processada(`transaction.handled`) geram métricas.
 * Toda transação processada gera um evento num tópico kafka (`transactions`)
 
+# Executar a aplicação localmente
+Execute os seguintes comandos no terminal:
+
+Realiza o build da aplicação:
+```
+cd src\accounts
+.\gradlew build
+```
+
+Inicializa os containers :
+```
+cd ..\..\infra
+docker compose up
+```
+
+A aplicação terá iniciado na porta 8080 e você pode validar acessando o healthcheck pelo browser:
+
+`http://localhost:8080/actuator/health`
+
 # Desenho de Arquitetura para AWS
-![Alt text here](docs/Diagrama-aws-v1.drawio.svg)
+![Diagrama de Arquitetura](docs/Diagrama-aws-v1.drawio.svg)
