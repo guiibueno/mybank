@@ -4,6 +4,7 @@ services:
     build:
       context: ../src/accounts
       dockerfile: ./Dockerfile
+    restart: always
     ports:
       - '8080:8080'
     depends_on:
@@ -19,6 +20,12 @@ services:
       - REDIS_PORT=6379
       - KAFKA_HOST=kafka
       - KAFKA_PORT=9092
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres:
     image: 'postgres:latest'
@@ -37,6 +44,12 @@ services:
     hostname: redis
     ports:
       - '6379:6379'
+    healthcheck:
+      test:  [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   zookeeper:
     image: 'confluentinc/cp-zookeeper:latest'
@@ -45,12 +58,19 @@ services:
       - 'ZOOKEEPER_TICK_TIME=2000'
     ports:
       - '22181:2181'
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   kafka:
     image: 'wurstmeister/kafka:latest'
     hostname: kafka
     depends_on:
       - zookeeper
+    restart: always
     ports:
       - '9092:9092'
       - '59092:59092'
