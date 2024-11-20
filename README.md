@@ -4,32 +4,35 @@
 
 Implementar as interfaces de abertura de conta e efetivação de transações(débito e credito), levando em consideração a garantia da consistencia dos dados, suporte a um alto volume de transações, desacoplamento, baixo tempo de resposta e possibilidade de evolução.
 
-Para garantir esses requisitos, decidi decompor o problema em duas partes "Contas" e "Transações".
-
-## 01 - Contas
-
-Será o microserviço responsavel pela abertura e gestão de contas. 
+## Contas
 
 #### Jornada 01: Abertura de Contas
-Visando o desacoplamento da jornada, assim como num banco de verdade, a abertura de contas será originada a partir de uma proposta, que poderá ser aprovada ou negada.
-O processamento da proposta deverá ser realizado de forma assincrona e caso aprovada, será aberta uma conta para o cliente.
+Visando o desacoplamento da jornada, assim como num banco de verdade, a abertura de contas será assincrona e foi pensada de forma que uma mensagem num Tópico Kafka inicie o processo de abertura.
 
-`POST /proposals`
+Exemplo: Um motor de analise de propostas aprova a proposta e solicita a abertura da conta de forma assincrona.
+
+Nesse projeto não teremos o fluxo de propostas para inserir uma mensagem no tópico (`accounts-request`), então para simular isso foi criado o endpoint:
+
+`POST /accounts`
 ```json
 {
     "name": "João da Silva",
-    "birthday_date": "1999-01-01",
+    "birth_date": "1999-11-01",
     "documents": [
         {
             "type": "CPF",
-            "number": "111.111.111-11"
+            "number": "111.111.333-11"
+        },
+        {
+            "type": "RG",
+            "number": "111.111.333-33"
         }
     ],
     "address": {
         "street": "Rua dos Bobos",
         "number": "0A",
         "city": "SÃO PAULO",
-        "state": ""
+        "state": "SP"
     },
     "contact_info": [
         {
@@ -66,45 +69,45 @@ Onde
 **Resposta**
 
 `HTTP 202 Accepted`
-```json
-{
-    "id" : "69f38532-f59a-432c-bfd3-96cb2d955eda",
-}
-```
-Onde
-- `id` deve ser um UUID representando o identificador unico de uma proposta.
 
 **Regras**
 
 Os campos **Nome**, **CPF** e **Data de Nascimento** são obrigatorios e a idade minima é **18 anos**. Caso essas condições não sejam satisfeitas, a API devera retornar Status Code 400 - Bad Request.
 
-A proposta nasce no status "IN_ANALYSIS" e pode evoluir para "APPROVED" ou "REJECTED".
+**Observações**
 
-`GET /proposals/[id]`
+* Toda solicitação de abertura(`account_requested_counter_total`) e efetivação de conta(`account_created_counter_total`) geram métricas.
+* Toda efetivação de conta gera um evento num tópico kafka (`accounts-registers`)
+
+
+#### Jornada 02: Gestão de Contas
+
+O processamento da abertura de contas será assincrono e para consultar as contas, podemos buscar pelo numero do documento ou pelo ID através dos endpoints abaixo:
+
+`GET /accounts?documentType=[documentType]&documentNumber=[documentNumber]`
 
 Onde
-- `[id]` (route parameter) deve ser um UUID representando o identificador unico de uma proposta.
+- `[documentType]` (query parameter) deve ser o tipo de documento informado na abertura da conta.
+- `[documentNumber]` (query parameter) deve ser o numero do documento correspondente ao tipo informado na abertura da conta.
 
 **Resposta**
 
 `HTTP 200 OK`
 ```json
-{
-  "id": "69f38532-f59a-432c-bfd3-96cb2d955eda",
-  "status": "APPROVED",
-  "created_at": "2024-11-11T20:30:00",
-  "updated_at": "2024-11-11T20:31:00",
-  "account_id": "249fdc0a-dc82-4b49-840f-55fbd8b2b544"  
-}
+[
+	{
+		"id": "0ea7aba7-8715-4b29-b943-e9466ee0b9f7",
+		"balance": 987.74
+	},
+	{
+		"id": "81075c43-4aae-4388-a32d-22fe1de9ca10",
+		"balance": 0.00
+	}
+]
 ```
 Onde
-- `id` deve ser um UUID representando o identificador unico de uma proposta.
-- `status` deve ser o status atual da proposta.
-- `created_at` deve ser a data/hora da criação.
-- `updated_at` deve ser a data/hora da ultima atualização.
-- `account_id` deve ser um UUID representando o identificador unico da conta originada através dessa proposta (se houver).
-
-#### Jornada 02: Gestão de Contas
+- `id` deve ser um UUID representando o identificador unico da conta.
+- `balance` deve ser o saldo atual da conta.
 
 `GET /accounts/[id]`
 
@@ -117,13 +120,58 @@ Onde
 ```json
 {
   "id": "69f38532-f59a-432c-bfd3-96cb2d955eda",
-  "name": "João da Silva",
   "balance": 0
 }
 ```
 Onde
 - `id` deve ser um UUID representando o identificador unico de uma proposta.
-- `name` deve ser o nome do cliente.
 - `balance` deve ser o saldo atual.
 
 ## 02 - Transações
+
+Visando o desacoplamento da jornada, assim como num banco de verdade, a abertura de contas será assincrona e foi pensada de forma que uma mensagem num Topico Kafka inicie o processo de abertura.
+
+Exemplo: Um motor de analise de propostas aprova a proposta e solicita a abertura da conta assincrona.
+
+Nesse projeto não teremos o fluxo de propostas para inserir uma mensagem no topico, então para simular isso foi criado o endpoint:
+
+`POST /accounts/[accountId]/transactions`
+```json
+{
+	"type": "D",
+	"amount": 222.00,
+	"description": "Compra Legal"
+}
+```
+Onde
+- `type` deve ser `C` para crédito ou `D` débito **(obrigatório)**.
+- `amount` deve ser um número decimal que represente o valor da transação **(obrigatório)**.
+- `description` deve ser uma string de 1 a 50 caracteres **(obrigatório)**.
+
+**Resposta**
+
+`HTTP 200 OK`
+```json
+{
+	"timestamp": "2024-11-20T19:53:46.478166022",
+	"status": "APPROVED",
+	"type": "C",
+	"amount": 222.00,
+	"balance": 3996.00
+}
+```
+Onde
+- `timestamp` deve ser a data e hora que a transação foi processada.
+- `status` deve representar o resultado da transação (`APPROVED` ou `REJECTED`).
+- `type` deve ser o tipo de transação.
+- `amount` deve ser um número decimal que represente o valor da transação.
+- `balance` deve ser um número decimal que represente o saldo atual da conta.
+
+**Regras**
+
+Os campos **Nome**, **CPF** e **Data de Nascimento** são obrigatorios e a idade minima é **18 anos**. Caso essas condições não sejam satisfeitas, a API devera retornar Status Code 400 - Bad Request.
+
+**Observações**
+
+* Toda solicitação de abertura(`account_requested_counter_total`) e efetivação de conta(`account_created_counter_total`) geram métricas.
+* Toda efetivação de conta gera um evento num tópico kafka (`accounts-registers`)
