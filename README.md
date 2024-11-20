@@ -208,10 +208,40 @@ Para visualizar as metricas, acesse o grafana na porta `3000`:
 
 `http://localhost:3000/`
 
-Usuário: admin
-Senha: grafana
+- Usuário: admin
+- Senha: grafana
 
 ![Dashboard grafana](docs/dashboard-sample.png)
 
 # Desenho de Arquitetura para AWS
 ![Diagrama de Arquitetura](docs/Diagrama-aws-v1.drawio.svg)
+
+# Principais Decisões
+## Arquitetura Hexagonal: 
+A arquitetura hexagonal, visa isolar a lógica de negócio da aplicação da infraestrutura externa (como banco de dados, APIs externas, sistemas legados e interfaces de usuário). Nesse modelo, a lógica de negócios é colocada no centro da aplicação, e a interação com o mundo externo acontece por meio de portas (ports) e adaptadores (adapters).
+
+Vantagens:
+- Desacoplamento: A lógica de negócios é isolada de detalhes de implementação, permitindo que componentes de infraestrutura sejam substituídos ou modificados sem impactar o núcleo.
+- Facilidade de Testes: Com o núcleo desacoplado da infraestrutura, é possível testar a lógica de negócios de maneira independente. 
+- Escalabilidade: Mudanças nas interfaces externas (como mudar o banco de dados ou adicionar novas integrações) não afetam a lógica interna da aplicação.
+- Flexibilidade: A adição de novas funcionalidades ou integrações pode ser feita sem impactar o sistema existente, facilitando evoluções e refatorações.
+
+## Kafka:
+O Apache Kafka é uma plataforma distribuída de streaming de eventos, projetada para processar grandes volumes de dados em tempo real. Se destaca em cenários de comunicação assíncrona, processamento de eventos e integração entre sistemas.
+
+Vantagens:
+- Escalabilidade: Kafka é altamente escalável, permitindo o processamento de milhões de mensagens por segundo com baixa latência. Sua arquitetura distribuída permite adicionar novos nós facilmente.
+- Resiliência: Kafka garante alta disponibilidade e tolerância a falhas, com replicação de dados e persistência.
+- Processamento de Eventos em Tempo Real: Kafka é ideal para sistemas que necessitam processar grandes volumes de eventos em tempo real, como logs de sistema, monitoramento de métricas, eventos de usuários, etc.
+- Desacoplamento: A arquitetura baseada em tópicos permite que produtores e consumidores de mensagens sejam desacoplados, facilitando a integração de novos serviços sem impacto direto.
+- Persistência e Replay de Mensagens: Kafka mantém um log de todas as mensagens, permitindo que os consumidores leiam eventos anteriores, o que é útil para a reprocessamento de dados ou análise histórica.
+- Suporte para Microserviços: Kafka facilita a comunicação entre microserviços e permite a implementação de arquiteturas orientadas a eventos.
+
+## PostgreSQL:
+O PostgreSQL é um sistema de gerenciamento de banco de dados relacional de código aberto que é conhecido por sua robustez, flexibilidade e conformidade com padrões SQL. Ele é amplamente utilizado em cenários que exigem consistência, integridade de dados e funcionalidades avançadas.
+
+Vantagens:
+- Suporte Completo a ACID: O PostgreSQL oferece total conformidade com as propriedades ACID (Atomicidade, Consistência, Isolamento e Durabilidade), garantindo a integridade dos dados em transações complexas.
+- Escalabilidade Vertical e Horizontal: Embora a escalabilidade horizontal não seja tão simples quanto a de bancos de dados NoSQL, o PostgreSQL oferece várias soluções como particionamento de tabelas e replicação para escalar conforme necessário.
+- Comunidade e Suporte: O PostgreSQL tem uma comunidade ativa e oferece uma rica documentação, o que facilita encontrar soluções para problemas comuns.
+- Performance em Consultas Complexas: É particularmente bem-sucedido em consultas complexas e grandes volumes de dados relacionais, o que o torna adequado para sistemas que necessitam de operações analíticas intensivas.
