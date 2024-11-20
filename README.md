@@ -129,11 +129,7 @@ Onde
 
 ## 02 - Transações
 
-Visando o desacoplamento da jornada, assim como num banco de verdade, a abertura de contas será assincrona e foi pensada de forma que uma mensagem num Topico Kafka inicie o processo de abertura.
-
-Exemplo: Um motor de analise de propostas aprova a proposta e solicita a abertura da conta assincrona.
-
-Nesse projeto não teremos o fluxo de propostas para inserir uma mensagem no topico, então para simular isso foi criado o endpoint:
+Para realizar o DÉBITO ou CRÉDITO de valores em uma conta, devemos submeter uma transação para ser autorizada. Esse endpoint realiza a autorização da transação e insere uma mensagem no tópico (`transactions`) para que outros sistemas possam ler essa informação de forma desacoplada (como por exemplo um Ledger que precisa registrar todas transações realizadas numa conta).
 
 `POST /accounts/[accountId]/transactions`
 ```json
@@ -169,9 +165,13 @@ Onde
 
 **Regras**
 
-Os campos **Nome**, **CPF** e **Data de Nascimento** são obrigatorios e a idade minima é **18 anos**. Caso essas condições não sejam satisfeitas, a API devera retornar Status Code 400 - Bad Request.
+Todos os campos são obrigatorios e caso essas condições não sejam satisfeitas, a API devera retornar Status Code 400 - Bad Request.
 
+Uma transação de débito nunca pode deixar o saldo do cliente negativo, nesses casos a transação deve ser RECUSADA e não deve alterar o saldo.
+Caso o saldo resultante fique zerado ou positivo, a transação de ser APROVADA e o valor subtraido do saldo.
+
+Caso uma transação não possa ser efetivada, deve ser RECUSADA.
 **Observações**
 
-* Toda solicitação de abertura(`account_requested_counter_total`) e efetivação de conta(`account_created_counter_total`) geram métricas.
-* Toda efetivação de conta gera um evento num tópico kafka (`accounts-registers`)
+* Toda transação processada(`transaction.handled`) geram métricas.
+* Toda transação processada gera um evento num tópico kafka (`transactions`)
