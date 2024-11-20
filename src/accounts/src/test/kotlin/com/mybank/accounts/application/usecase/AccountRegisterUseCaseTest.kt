@@ -2,7 +2,9 @@ package com.mybank.accounts.application.usecase
 
 import com.mybank.accounts.application.dto.AccountDTO
 import com.mybank.accounts.application.dto.AccountRequest
+import com.mybank.accounts.application.port.output.AccountCreatedOutputPort
 import com.mybank.accounts.application.port.output.AccountOutputPort
+import com.mybank.accounts.application.port.output.AccountRegisterOutputPort
 import com.mybank.accounts.application.port.output.MetricsOutputPort
 import com.mybank.accounts.utils.AccountRequestMock
 import io.mockk.MockKAnnotations
@@ -23,15 +25,21 @@ class AccountRegisterUseCaseTest {
     @MockK
     private lateinit var accountOutputPort: AccountOutputPort
     @MockK
+    private lateinit var accountRegisterOutputPort: AccountRegisterOutputPort
+    @MockK
+    private lateinit var accountCreatedOutputPort: AccountCreatedOutputPort
+    @MockK
     private lateinit var metricsOutputPort: MetricsOutputPort
 
     init {
         MockKAnnotations.init(this)
         accountRegisterUseCase = spyk(
-            AccountRegisterUseCase(accountOutputPort, metricsOutputPort)
+            AccountRegisterUseCase(accountOutputPort, accountRegisterOutputPort, accountCreatedOutputPort, metricsOutputPort)
         )
 
+        every { accountCreatedOutputPort.emitEvent(any()) } returns Unit
         every { metricsOutputPort.accountCreated(any()) } returns Unit
+        every { metricsOutputPort.accountRegisterRequested() } returns Unit
     }
 
     @Test
@@ -42,6 +50,7 @@ class AccountRegisterUseCaseTest {
 
         every { accountOutputPort.save(any<AccountRequest>()) } returns AccountDTO(accountId, BigDecimal.ZERO)
 
+
         val account = accountRegisterUseCase.invoke(accountRequest)
 
         Assertions.assertNotNull(account)
@@ -49,6 +58,8 @@ class AccountRegisterUseCaseTest {
 
         coVerify (exactly = 1) {
             accountOutputPort.save(any())
+            accountCreatedOutputPort.emitEvent(any())
+            metricsOutputPort.accountCreated(any())
         }
     }
 
@@ -63,6 +74,29 @@ class AccountRegisterUseCaseTest {
         Assertions.assertNull(account)
 
         coVerify (exactly = 1) {
+            accountOutputPort.save(any())
+        }
+
+        coVerify (exactly = 0) {
+            accountCreatedOutputPort.emitEvent(any())
+            metricsOutputPort.accountCreated(any())
+        }
+    }
+
+    @Test
+    fun `should send to async process successfully`() {
+        val accountRequest = mockAccountRequest.GetAccountRequest()
+
+        every { accountRegisterOutputPort.sendToAsyncProcess(any()) } returns Unit
+
+        accountRegisterUseCase.invokeAsync(accountRequest)
+
+        coVerify (exactly = 1) {
+            accountRegisterOutputPort.sendToAsyncProcess(any())
+            metricsOutputPort.accountRegisterRequested()
+        }
+
+        coVerify (exactly = 0) {
             accountOutputPort.save(any())
         }
     }

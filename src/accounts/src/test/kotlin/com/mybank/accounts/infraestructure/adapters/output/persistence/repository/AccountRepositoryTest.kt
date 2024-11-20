@@ -1,6 +1,7 @@
 package com.mybank.accounts.infraestructure.adapters.output.persistence.repository
 
 import com.mybank.accounts.domain.entity.AccountEntity
+import com.mybank.accounts.domain.entity.CustomerDocumentsEntity
 import com.mybank.accounts.domain.entity.CustomerEntity
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,13 +42,17 @@ class AccountRepositoryTest {
     private lateinit var accountRepository: AccountRepository
     @Autowired
     private lateinit var customerRepository: CustomerRepository
+    @Autowired
+    private lateinit var customerDocumentsRepository: CustomerDocumentsRepository
 
     private lateinit var customer: CustomerEntity
+    private lateinit var customerDocument: CustomerDocumentsEntity
     private lateinit var account: AccountEntity
 
     @BeforeEach
     internal fun setUp() {
         customer = customerRepository.save(CustomerEntity( null, LocalDateTime.now(), "Teste", LocalDate.now()))
+        customerDocument = customerDocumentsRepository.save(CustomerDocumentsEntity(customer.id.toString(), "CPF", "123.456.789-10"))
         account = accountRepository.save(AccountEntity(null, true, LocalDateTime.now(), customer.id!!, BigDecimal.ZERO))
     }
 
@@ -127,5 +132,25 @@ class AccountRepositoryTest {
         val updateBalanceResult = accountRepository.updateBalance(accountId, transactionType, amount)
 
         Assertions.assertNull(updateBalanceResult)
+    }
+
+    @Test
+    fun `should return accounts when are accounts for the document`() {
+        val documentType = customerDocument.type
+        val documentNumber = customerDocument.number
+
+        val accounts = accountRepository.findByDocument(documentType, documentNumber)
+
+        Assertions.assertTrue(accounts.count() > 0)
+    }
+
+    @Test
+    fun `should return empty accounts when there are no accounts for the document`() {
+        val documentType = customerDocument.type
+        val documentNumber = "131.131.131-11"
+
+        val accounts = accountRepository.findByDocument(documentType, documentNumber)
+
+        Assertions.assertTrue(accounts.count() == 0)
     }
 }

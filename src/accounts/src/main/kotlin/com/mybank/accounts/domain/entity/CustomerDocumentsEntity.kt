@@ -10,4 +10,6 @@ data class CustomerDocumentsEntity(@Id val id: String?,
                                    val customerid: String,
                                    val type: String,
                                    val number: String) {
+
+    constructor(customerid: String, type: String, number: String) : this (null, LocalDateTime.now(), customerid, type, number) { }
 }
