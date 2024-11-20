@@ -127,7 +127,7 @@ Onde
 - `id` deve ser um UUID representando o identificador unico de uma proposta.
 - `balance` deve ser o saldo atual.
 
-## 02 - Transações
+## Transações
 
 Para realizar o DÉBITO ou CRÉDITO de valores em uma conta, devemos submeter uma transação para ser autorizada. Esse endpoint realiza a autorização da transação e insere uma mensagem no tópico (`transactions`) para que outros sistemas possam ler essa informação de forma desacoplada (como por exemplo um Ledger que precisa registrar todas transações realizadas numa conta).
 
@@ -176,3 +176,5 @@ Caso uma transação não possa ser efetivada, deve ser RECUSADA.
 
 * Toda transação processada(`transaction.handled`) geram métricas.
 * Toda transação processada gera um evento num tópico kafka (`transactions`)
+
+# Desenho de Arquitetura para AWS
