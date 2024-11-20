@@ -178,3 +178,4 @@ Caso uma transação não possa ser efetivada, deve ser RECUSADA.
 * Toda transação processada gera um evento num tópico kafka (`transactions`)
 
 # Desenho de Arquitetura para AWS
+![Alt text here](docs/Diagrama-aws-v1.drawio.svg)
