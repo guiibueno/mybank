@@ -245,3 +245,11 @@ Vantagens:
 - Escalabilidade Vertical e Horizontal: Embora a escalabilidade horizontal não seja tão simples quanto a de bancos de dados NoSQL, o PostgreSQL oferece várias soluções como particionamento de tabelas e replicação para escalar conforme necessário.
 - Comunidade e Suporte: O PostgreSQL tem uma comunidade ativa e oferece uma rica documentação, o que facilita encontrar soluções para problemas comuns.
 - Performance em Consultas Complexas: É particularmente bem-sucedido em consultas complexas e grandes volumes de dados relacionais, o que o torna adequado para sistemas que necessitam de operações analíticas intensivas.
+
+## Uso de Lock Pessimista (usando SELECT FOR UPDATE) + Lock Distribuído
+Optei por adotar uma abordagem híbrida para orquestrar a atualização do saldo e garantir a consistência dos dados.
+
+Vantagens:
+- Controle de Concorrência em Diferentes Níveis: O lock pessimista pode ser usado para controlar o acesso a dados no nível do banco de dados, enquanto o lock distribuído pode coordenar o acesso entre serviços diferentes, permitindo controle de concorrência eficaz em sistemas distribuídos.
+- Redundância e Resiliência: Usando o lock distribuído, podemos garantir que os serviços distribuídos não tentem acessar o mesmo registro ao mesmo tempo, enquanto o lock pessimista no banco garante consistência dentro do próprio banco de dados.
+- Escalabilidade com Controle de Concorrência: A combinação das duas abordagens pode permitir que o sistema se escale de maneira eficaz, mantendo a integridade e a consistência dos dados sem sobrecarregar o banco de dados com locks excessivos.
