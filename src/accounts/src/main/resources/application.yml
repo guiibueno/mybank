@@ -1,28 +1,10 @@
 spring:
   data:
     redis:
-      redisson:
-        config: |
-          singleServerConfig:
-            idleConnectionTimeout: 1000
-            connectTimeout: 1000
-            timeout: 300
-            retryAttempts: 3
-            retryInterval: 100
-            password: null
-            subscriptionsPerConnection: 5
-            clientName: null
-            address: "redis://127.0.0.1:6379"
-            subscriptionConnectionMinimumIdleSize: 1
-            subscriptionConnectionPoolSize: 50
-            connectionMinimumIdleSize: 24
-            connectionPoolSize: 64
-            database: 0
-            dnsMonitoringInterval: 5000
-          threads: 16
-          nettyThreads: 32
-          codec: !<org.redisson.codec.Kryo5Codec> {}
-          transportMode: "NIO"
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      connectTimeout: 100
+      timeout: 100
   kafka:
     consumer:
       auto-offset-reset: latest
@@ -37,3 +19,20 @@ spring:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+distributed-lock:
+  type: redis
+  timeout:
+    lock: 15
+  retry:
+    count: 3
+    sleep: 100
+
+topics:
+  transactions:
+    name: transactions
+  accounts:
+    requests:
+      name: accounts-request
+    registers:
+      name: accounts-registers

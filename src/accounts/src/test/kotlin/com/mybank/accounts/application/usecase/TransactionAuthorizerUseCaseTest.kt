@@ -5,8 +5,10 @@ import com.mybank.accounts.application.dto.AccountRequest
 import com.mybank.accounts.application.dto.TransactionRequestDTO
 import com.mybank.accounts.application.dto.TransactionResultDTO
 import com.mybank.accounts.application.port.output.AccountOutputPort
+import com.mybank.accounts.application.port.output.DistributedLockerRunner
 import com.mybank.accounts.application.port.output.MetricsOutputPort
 import com.mybank.accounts.application.port.output.TransactionOutputPort
+import com.mybank.accounts.domain.exception.DistributedLockException
 import com.mybank.accounts.domain.valueobjects.TransactionStatus
 import com.mybank.accounts.utils.AccountRequestMock
 import io.mockk.MockKAnnotations
@@ -16,8 +18,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.spyk
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.redisson.api.RLock
-import org.redisson.api.RedissonClient
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
@@ -26,7 +26,7 @@ class TransactionAuthorizerUseCaseTest {
     private var transactionAuthorizerUseCase: TransactionAuthorizerUseCase
 
     @MockK
-    private lateinit var redissonClient: RedissonClient
+    private lateinit var distributedLockerRunner: DistributedLockerRunner
     @MockK
     private lateinit var accountOutputPort: AccountOutputPort
     @MockK
@@ -34,13 +34,10 @@ class TransactionAuthorizerUseCaseTest {
     @MockK
     private lateinit var metricsOutputPort: MetricsOutputPort
 
-    @MockK
-    private lateinit var accountLock: RLock
-
     init {
         MockKAnnotations.init(this)
         transactionAuthorizerUseCase = spyk(
-            TransactionAuthorizerUseCase(redissonClient, accountOutputPort, transactionOutputPort, metricsOutputPort)
+            TransactionAuthorizerUseCase(distributedLockerRunner, accountOutputPort, transactionOutputPort, metricsOutputPort)
         )
 
         every { metricsOutputPort.transactionHandled(any()) } returns Unit
@@ -51,13 +48,11 @@ class TransactionAuthorizerUseCaseTest {
         val accountId = UUID.randomUUID()
 
         val transactionRequest = TransactionRequestDTO(accountId, 'C', BigDecimal.TEN, "Teste")
-
-        every { redissonClient.getLock(any<String>()) } returns accountLock
-        every { accountLock.tryLock(any(), any(), any()) } returns true
-        every { accountLock.unlock() } returns Unit
-
-        every { accountOutputPort.updateBalance(any<TransactionRequestDTO>()) } returns TransactionResultDTO(
+        val transactionResult = TransactionResultDTO(
             LocalDateTime.now(), TransactionStatus.APPROVED, transactionRequest.type, transactionRequest.amount, BigDecimal.TEN)
+
+        every { accountOutputPort.updateBalance(any<TransactionRequestDTO>()) } returns transactionResult
+        every { distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any()) } returns accountOutputPort.updateBalance(transactionRequest)
 
         every { transactionOutputPort.emitEvent(any()) } returns Unit
 
@@ -68,10 +63,7 @@ class TransactionAuthorizerUseCaseTest {
         Assertions.assertEquals(TransactionStatus.APPROVED, transaction?.status)
 
         coVerify (exactly = 1) {
-            redissonClient.getLock(any<String>())
-            accountLock.tryLock(any(), any(), any())
-            accountLock.unlock()
-
+            distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any())
             accountOutputPort.updateBalance(any())
             transactionOutputPort.emitEvent(any())
         }
@@ -83,31 +75,19 @@ class TransactionAuthorizerUseCaseTest {
 
         val transactionRequest = TransactionRequestDTO(accountId, 'C', BigDecimal.TEN, "Teste")
 
-        every { redissonClient.getLock(any<String>()) } returns accountLock
-        every { accountLock.tryLock(any(), any(), any()) } returns false
-        every { accountLock.unlock() } returns Unit
-
-        every { accountOutputPort.updateBalance(any<TransactionRequestDTO>()) } returns TransactionResultDTO(
-            LocalDateTime.now(), TransactionStatus.REJECTED, transactionRequest.type, transactionRequest.amount, BigDecimal.TEN)
-
-        every { transactionOutputPort.emitEvent(any()) } returns Unit
+        every { distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any()) }.throws(DistributedLockException(""))
 
         val transaction = transactionAuthorizerUseCase.invoke(transactionRequest)
 
         Assertions.assertNull(transaction)
 
         coVerify (exactly = 1) {
-            redissonClient.getLock(any<String>())
-            accountLock.tryLock(any(), any(), any())
+            distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any())
         }
 
         coVerify (exactly = 0) {
-            accountLock.unlock()
-
             accountOutputPort.updateBalance(any())
             transactionOutputPort.emitEvent(any())
-
-            accountOutputPort.updateBalance(any())
         }
     }
 }

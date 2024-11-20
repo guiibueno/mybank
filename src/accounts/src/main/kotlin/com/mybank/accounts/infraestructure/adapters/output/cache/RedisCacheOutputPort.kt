@@ -2,17 +2,15 @@ package com.mybank.accounts.infraestructure.adapters.output.cache
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mybank.accounts.application.port.output.CacheOutputPort
-import org.redisson.api.RedissonClient
-import org.redisson.client.codec.StringCodec
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
-import java.time.Duration
-import java.time.Instant
+import java.util.concurrent.TimeUnit
 
 @Service
 class RedisCacheOutputPort(
     val mapper: ObjectMapper,
-    val client: RedissonClient
+    val client: RedisTemplate<String, String>
 ) : CacheOutputPort {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -20,8 +18,7 @@ class RedisCacheOutputPort(
         try{
             val serializedValue = mapper.writeValueAsString(value)
 
-            val bucket = client.getBucket<String>(key, StringCodec.INSTANCE)
-            bucket.set(serializedValue, Duration.ofSeconds(ttl))
+            client.opsForValue().set(key, serializedValue)
         }
         catch (ex: Exception){
             logger.error("Error to set an value into key $key", ex)
@@ -30,8 +27,7 @@ class RedisCacheOutputPort(
 
     override fun <T> getValue(key: String, clazz: Class<T>): T? {
         try {
-            val bucket = client.getBucket<String>(key, StringCodec.INSTANCE)
-            val cachedValue = bucket.get()
+            val cachedValue = client.opsForValue().get(key)
             if(cachedValue != null)
                 return mapper.readValue(cachedValue, clazz)
         } catch (ex: Exception){
@@ -43,8 +39,7 @@ class RedisCacheOutputPort(
 
     override fun expire(key: String) {
         try {
-            val bucket = client.getBucket<String>(key, StringCodec.INSTANCE)
-            bucket.expire(Instant.now())
+            client.opsForValue().getAndExpire(key, 0, TimeUnit.NANOSECONDS)
         } catch (ex: Exception){
             logger.error("Error to expire value from key $key", ex)
         }

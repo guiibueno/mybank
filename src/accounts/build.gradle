@@ -23,14 +23,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	implementation 'org.springframework.integration:spring-integration-core'
+	implementation("org.springframework.integration:spring-integration-redis")
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.springframework.kafka:spring-kafka'
-	implementation ("org.redisson:redisson-spring-boot-starter:3.38.1") {
-		exclude group: 'org.redisson', module: 'redisson-spring-data-33'
-	}
-	implementation "org.redisson:redisson-spring-data-27:3.38.1"
 
 	implementation "io.micrometer:micrometer-core"
 	implementation 'io.micrometer:micrometer-registry-prometheus:latest.release'
