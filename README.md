@@ -171,6 +171,7 @@ Uma transação de débito nunca pode deixar o saldo do cliente negativo, nesses
 Caso o saldo resultante fique zerado ou positivo, a transação de ser APROVADA e o valor subtraido do saldo.
 
 Caso uma transação não possa ser efetivada, deve ser RECUSADA.
+
 **Observações**
 
 * Toda transação processada(`transaction.handled`) geram métricas.
