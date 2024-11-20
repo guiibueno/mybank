@@ -79,6 +79,10 @@ Os campos **Nome**, **CPF** e **Data de Nascimento** são obrigatorios e a idade
 * Toda solicitação de abertura(`account_requested_counter_total`) e efetivação de conta(`account_created_counter_total`) geram métricas.
 * Toda efetivação de conta gera um evento num tópico kafka (`accounts-registers`)
 
+**Fluxo de abertura de contas:**
+![Diagrama de Sequencia do Fluxo de Abertura de Contas](docs/account-register-sequence-diagram.svg)
+
+
 
 #### Jornada 02: Gestão de Contas
 
