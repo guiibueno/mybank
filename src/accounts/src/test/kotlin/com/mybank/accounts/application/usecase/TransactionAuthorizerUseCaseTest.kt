@@ -70,24 +70,26 @@ class TransactionAuthorizerUseCaseTest {
     }
 
     @Test
-    fun `should returns null when not acquire a lock`() {
+    fun `should returns REJECTED when not acquire a lock`() {
         val accountId = UUID.randomUUID()
 
         val transactionRequest = TransactionRequestDTO(accountId, 'C', BigDecimal.TEN, "Teste")
 
         every { distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any()) }.throws(DistributedLockException(""))
+        every { transactionOutputPort.emitEvent(any()) } returns Unit
 
         val transaction = transactionAuthorizerUseCase.invoke(transactionRequest)
 
-        Assertions.assertNull(transaction)
+        Assertions.assertNotNull(transaction)
+        Assertions.assertEquals(TransactionStatus.REJECTED, transaction?.status)
 
         coVerify (exactly = 1) {
             distributedLockerRunner.tryRunLocked<TransactionResultDTO?>(any(), any(), any())
+            transactionOutputPort.emitEvent(any())
         }
 
         coVerify (exactly = 0) {
             accountOutputPort.updateBalance(any())
-            transactionOutputPort.emitEvent(any())
         }
     }
 }

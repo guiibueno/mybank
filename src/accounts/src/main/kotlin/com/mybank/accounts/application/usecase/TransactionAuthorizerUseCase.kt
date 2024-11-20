@@ -9,8 +9,11 @@ import com.mybank.accounts.application.port.output.MetricsOutputPort
 import com.mybank.accounts.application.port.output.TransactionOutputPort
 import com.mybank.accounts.domain.event.TransactionEvent
 import com.mybank.accounts.domain.exception.DistributedLockException
+import com.mybank.accounts.domain.valueobjects.TransactionStatus
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -32,6 +35,8 @@ class TransactionAuthorizerUseCase(
             }
         } catch (lockException: DistributedLockException){
             logger.error("Error to lock account for transaction", lockException)
+
+            transactionResult = TransactionResultDTO(LocalDateTime.now(), TransactionStatus.REJECTED, transactionRequestDTO.type, transactionRequestDTO.amount, BigDecimal.ZERO)
         }
 
         if(transactionResult != null){
